@@ -1,0 +1,58 @@
+.x_say_wrapper .x_say_cont,
+.x_say_wrapper .x_say_border {
+    position: absolute;
+}
+.x_say_wrapper .x_say_cont .x_say_btn_group button,
+.x_say_wrapper .x_say_border .x_say_btn_group button {
+    margin: 0 10px;
+}
+.x_say_wrapper .x_say_cont .x_say_btn_group button.yes.btn-warning,
+.x_say_wrapper .x_say_border .x_say_btn_group button.yes.btn-warning {
+    background: #ff7f27;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    min-width: 100px;
+}
+.x_say_wrapper .x_say_cont .x_say_btn_group button.no,
+.x_say_wrapper .x_say_border .x_say_btn_group button.no {
+    background: #f6f6f6;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    min-width: 80px;
+}
+.x_say_wrapper .x_say_cont .x_say_close_btn,
+.x_say_wrapper .x_say_border .x_say_close_btn {
+    color: #ff9578;
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 10;
+    background: url("images/btn_close.png");
+    background-repeat: no-repeat;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+}
+.x_say_wrapper .x_say_cont .x_say_title,
+.x_say_wrapper .x_say_border .x_say_title {
+    color: #ff9578;
+    font-size: 12px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    background: #f2f2f2;
+    height: 34px;
+    line-height: 34px;
+    text-indent: 20px;
+    color: #000;
+    font-size: 14px;
+}

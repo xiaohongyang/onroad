@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\common\components\helpers\MobileMsgHelpers;
 use Yii;
 use yii\base\Model;
 
@@ -13,45 +14,9 @@ use yii\base\Model;
  */
 class LoginForm extends Model
 {
-    public $username;
-    public $password;
-    public $rememberMe = true;
 
-    private $_user = false;
-
-
-    /**
-     * @return array the validation rules.
-     */
-    public function rules()
-    {
-        return [
-            // username and password are both required
-            [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
-            ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
-            ['password', 'validatePassword'],
-        ];
-    }
-
-    /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
-     *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
-     */
-    public function validatePassword($attribute, $params)
-    {
-        if (!$this->hasErrors()) {
-            $user = $this->getUser();
-
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
-            }
-        }
-    }
+    public $_user = false;
+    public $mobile='';
 
     /**
      * Logs in a user using the provided username and password.
@@ -59,10 +24,39 @@ class LoginForm extends Model
      */
     public function login()
     {
-        if ($this->validate()) {
-            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
+
+        $data = Yii::$app->request->post();
+        $mobile = $data['mobile'];
+        $code = $data['code'];
+
+        $rs = false;
+        if(empty($mobile) || !trim($mobile)){
+            Yii::$app->session->setFlash('message', '手机号不能为空');
+        } else if(empty($code) || !trim($code)) {
+            Yii::$app->session->setFlash('message', '验证码不能为空');
+        } else if(!$this->checkMobileCode($mobile, $code)){
+            Yii::$app->session->setFlash('message', '验证码错误');
+        } else {
+
+            $this->mobile = $mobile;
+            $user = $this->getUser($mobile);
+            if(!$user){
+                //创建用户
+                $registerModel = new RegisterModel();
+                $createResult = $registerModel->create(['mobile' => $mobile]);
+                if(!$createResult){
+                    Yii::$app->session->setFlash('message', '创建用户失败!');
+                }else{
+                    //创建成功,获取用户
+                    $rs = true;
+                    Yii::$app->user->login($this->getUser($mobile),3600*24);
+                }
+            } else {
+                $rs = true;
+                Yii::$app->user->login($this->getUser($mobile),3600*24);
+            }
         }
-        return false;
+        return $rs;
     }
 
     /**
@@ -70,12 +64,86 @@ class LoginForm extends Model
      *
      * @return User|null
      */
-    public function getUser()
+    public function getUser($mobile)
     {
-        if ($this->_user === false) {
-            $this->_user = User::findByUsername($this->username);
+        if ($this->_user == false) {
+            $this->_user = UserModel::findByMobile($mobile);
+        }
+        return $this->_user;
+    }
+
+
+    public function getMobileCheckcode($mobile){
+
+        $error = $this->_getMobileCheckcodeHandle($mobile);
+        if($error !== true)
+            return $error;
+        else{
+            //生成验证码
+            $checkCode = $this->_setMobilecode($mobile);
+
+            //发送验证码，并返回到前端
+            MobileMsgHelpers::getInstance()->send([$mobile], "您的验证码为". $checkCode);
+            return true;
+        }
+    }
+
+    /**
+     * 获取手机验证码前数据验证
+     * @param $mobile
+     * @return bool|string
+     */
+    private function _getMobileCheckcodeHandle($mobile){
+
+        if(! \Yii::$app->request->isPost)
+
+            return "非法请求!";
+        else {
+
+            //1.判断手机号是否正确
+            if(empty($mobile))
+                return "手机号码不能为空!";
+            $mobile = trim($mobile);
+            if(strlen($mobile) != 11 || !preg_match("#1[\d]{10}#", $mobile))
+                return "非法手机号码";
+            //2.判断手机号是否已经存在
+            if( UserModel::findOne(['mobile'=>$mobile]) )
+                return "手机号已经存在!";
+            else
+                return true;
         }
 
-        return $this->_user;
+    }
+
+    /**
+     * 设置并返回手机验证码
+     * @param $mobile
+     * @return int
+     */
+    private function _setMobilecode($mobile){
+
+        $checkCode = rand(10000,99999);
+        $key = 'mobile_check_code_'.$mobile;
+        \Yii::$app->session->set($key, $checkCode);
+        return $checkCode;
+    }
+
+    /**
+     * 获取指定手机验证码
+     * @param $mobile
+     * @return mixed
+     */
+    public function getMobilecode($mobile){
+
+        $key = 'mobile_check_code_'.$mobile;
+        return \Yii::$app->session->get($key);
+    }
+
+    /**
+     *  validate mobile code
+     */
+    public function checkMobileCode($mobile, $code){
+
+        return $this->getMobilecode($mobile) == $code;
     }
 }

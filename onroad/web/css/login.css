@@ -1,0 +1,14 @@
+#bg{width: 16rem;position: relative;background-color: rgb(228,228,228);}
+#head{width: 16rem;height: 2rem;background-color: rgb(0,204,255);text-align: center;color: white;line-height: 2rem;}
+#content{width: 16rem;background-color: white;border-bottom: 1px solid rgb(102,102,102);padding-bottom: 0.5rem;}
+#content .fenge{width: 15rem;margin: 0 auto;height: 1px;background-color: rgb(102,102,102);margin-top:0.3rem; }
+#content input{height: 1rem;line-height: 1rem;width: 10rem;margin-left: 1rem;margin-top: 0.5rem;font-size: 0.7rem;}
+#content span{font-size: 0.5rem;padding: 0.3rem;background-color: rgb(222,222,222);border-radius: 3px;text-align: center;}
+#login input{width: 15rem;height: 2rem;margin: 1rem 0.5rem;text-align: center;background-color: rgb(0,204,255);border-radius: 6px;font-size: 1rem;color: white;}
+#login p{font-size: 0.6rem;text-align: center;}
+#login p a{text-decoration: underline;}
+
+#bottom{width: 16rem;height: 2rem;position: fixed;bottom: 0px;background-color: rgb(244,212,212);font-size: 0.8rem;}
+#bottom li a{color: black;}
+#bottom li{float: left;width: 3.95555rem;height: 2rem;line-height: 2rem;text-align: center;}
+#bottom .border_rt{border-right: 1px dotted rgb(172,164,164);}

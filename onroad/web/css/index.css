@@ -1,0 +1,31 @@
+body{background-color: rgb(228,228,228);}
+#bg{width: 16rem;position: relative;background-color: rgb(255,255,255);height: 100%;}
+#bg #head{height: 2.3rem;line-height:2.3rem;background-color: rgb(251,251,251);position: relative;}
+#bg #head .left_img{padding: 1.15rem 1.15rem;float: left;background-image: url(../imges/logo_head.png);background-repeat: no-repeat;margin-right: 0.5rem;vertical-align: middle;background-position: center center;}
+#bg #head .right_img{padding: 1.15rem 0.55rem;float: right;background-image: url(../imges/share.png);background-repeat: no-repeat;vertical-align: middle;background-position: center center; }
+#bg #head .txt{color: black;font-size: 1.2rem;}
+#bg #head .logo{vertical-align: top;}
+#bg #head .down_list{position: absolute;width: 3.5rem;right: 0px;top: 0px;background-color: white;border: 1px solid rgb(224,212,212);border-bottom-left-radius: 3px;display: none;}
+#bg #head .down_list li{width: 100%;font-size: 0.5rem;line-height: 0.5rem;text-align: center;color: black;padding: 0.6rem 0.2rem;border-bottom: 1px solid rgb(224,212,212);}
+
+#fenge{width: 16rem;height: 0.2rem;background-color:rgb(228,228,228); }
+
+#my_route p{text-align: center;}
+#my_route p.line1{font-size:0.7rem;color: black;margin-top:0.5rem;}
+#my_route p.line2{font-size: 1.2rem;color: rgb(201,201,201);}
+#my_route input{width: 6rem;height: 1.75rem;background-color:rgb(0,204,255);margin: 0 5rem;margin-top:1rem;border-radius: 2px; }
+
+
+#my_route2 p{font-size:0.7rem;color: black;margin-top:0.5rem;text-align: center;}
+#my_route2 .exp{text-align: left;margin-left:0.5rem; }
+#my_route2 ul{width: 16rem;height: 2rem;line-height: 2rem;text-align: center;margin-top:0.3rem; color: black;}
+#my_route2 ul li{float: left;height: 1.7rem;margin:0.15rem 0;width: 3.25rem; margin-left: 0.6rem;font-size: 0.6rem;background-color: rgb(0,204,255);line-height: 1.7rem;border-radius: 3px;}
+
+
+#bg #myCarousel img{margin: 0 auto;display: block;margin-top:0.5rem; }
+
+
+#bottom{width: 16rem;height: 2rem;position: fixed;bottom: 0px;background-color: rgb(244,212,212);font-size: 0.8rem;}
+#bottom li a{color: black;}
+#bottom li{float: left;width: 3.95555rem;height: 2rem;line-height: 2rem;text-align: center;}
+#bottom .border_rt{border-right: 1px dotted rgb(172,164,164);}

@@ -1,24 +1,21 @@
-<?php
-    use \yii\helpers\Url;
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>共享通勤_主页</title>
-    <script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+    <script src="jquery-1.7.2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/css/public.css">
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="css/public.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 <div id="bg">
     <div id="head">
         <img src="imges/logo_head.png" alt="" class="logo">
-        <span class="txt"><?=Yii::$app->user->isGuest ? '老司机' : Yii::$app->user->identity->mobile?></span>
+        <span class="txt">老司机</span>
         <span class="right_img"></span>
         <ul class="down_list">
             <a href="">
@@ -27,7 +24,7 @@
             <a href="">
                 <li>剩余次数</li>
             </a>
-            <a href="<?=Url::to('/site/logout')?>">
+            <a href="">
                 <li>退出</li>
             </a>
             <li class="close_list">收起</li>

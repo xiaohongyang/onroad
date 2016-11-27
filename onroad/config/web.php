@@ -1,5 +1,7 @@
 <?php
 
+require_once ( dirname(__FILE__ ) . '/../common/components/helpers/MobileMsgAliHelpers.php');
+
 $params = require(__DIR__ . '/params.php');
 
 $config = [
@@ -38,14 +40,20 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
-        /*
-        'urlManager' => [
+        'urlManager'=>[
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                "<controller:\w+>/<action:\w+>/<id:\d+>"=>"<controller>/<action>",
+                "<module:\w+>/<controller:\w+>/<action:\w+>"=>"<module>/<controller>/<action>",
+                "<controller:\w+>/<action:\w+>"=>"<controller>/<action>",
             ],
         ],
-        */
+        'mobileMsgHelpers' => [
+            'class' => 'app\common\components\helpers\MobileMsgHelpers'
+        ]
     ],
     'params' => $params,
 ];

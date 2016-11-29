@@ -36,7 +36,7 @@
 					</div>
 					<div id="login">
 						<a href="register.html"><input type="submit" value="登陆"></a>
-						<p><a href="index.html">立即进入</a></p>
+						<p><a href="<?=\yii\helpers\Url::to('/')?>">立即进入</a></p>
 					</div>
 				</form>
 

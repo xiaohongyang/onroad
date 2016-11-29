@@ -21,15 +21,30 @@
         <span class="txt"><?=Yii::$app->user->isGuest ? '老司机' : Yii::$app->user->identity->mobile?></span>
         <span class="right_img"></span>
         <ul class="down_list">
-            <a href="">
-                <li>我的信息</li>
-            </a>
-            <a href="">
-                <li>剩余次数</li>
-            </a>
-            <a href="<?=Url::to('/site/logout')?>">
-                <li>退出</li>
-            </a>
+
+            <?php
+                if(Yii::$app->user->isGuest) {
+            ?>
+                    <a href="<?=Url::to('/site/login')?>">
+                        <li>登录</li>
+                    </a>
+
+            <?php
+                } else {
+            ?>
+                    <a href="">
+                        <li>我的信息</li>
+                    </a>
+                    <a href="">
+                        <li>剩余次数</li>
+                    </a>
+                    <a href="<?=Url::to('/site/logout')?>">
+                        <li>退出</li>
+                    </a>
+            <?php
+                }
+            ?>
+
             <li class="close_list">收起</li>
         </ul>
     </div>

@@ -58,7 +58,7 @@
 
         <?=$form->field($model, 'mobile', ['options'=>[
             'class' => 'phone_no'
-        ]])->textInput(['class'=>'tt','disabled'=>'disabled'])->label('手机号码：',['class'=>'sign'])->error(['class'=>'warning'])?>
+        ]])->textInput(['class'=>'tt','readonly'=>'readonly'])->label('手机号码：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
 
         <?=$form->field($model, 'sex', ['options'=>[
@@ -76,13 +76,13 @@
 
         <div class="xiaban_time">
             <span class="sign">家庭住址：</span>
-            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[homeAddress]" id="homeAddress" disabled="disabled" class="tt ">
+            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[homeAddress]" id="homeAddress" readonly="readonly" class="tt ">
             <span class="bt_mp" onclick="setAddress();return false;">地图</span>
         </div>
         <div class="shangban_time ex">
             <div class="fenge"></div>
             <span class="sign">公司住址：</span>
-            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[companyAddress]" id="companyAddress" disabled="disabled" class="tt">
+            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[companyAddress]" id="companyAddress" readonly="readonly" class="tt">
             <span class="bt_mp" onclick="setCompanyAddress(); return false;">地图</span>
         </div>
 

@@ -9,8 +9,6 @@ use yii\base\Model;
 /**
  * LoginForm is the model behind the login form.
  *
- * @property User|null $user This property is read-only.
- *
  */
 class LoginForm extends Model
 {
@@ -59,11 +57,7 @@ class LoginForm extends Model
         return $rs;
     }
 
-    /**
-     * Finds user by [[username]]
-     *
-     * @return User|null
-     */
+
     public function getUser($mobile)
     {
         if ($this->_user == false) {
@@ -107,8 +101,8 @@ class LoginForm extends Model
             if(strlen($mobile) != 11 || !preg_match("#1[\d]{10}#", $mobile))
                 return "非法手机号码";
             //2.判断手机号是否已经存在
-            if( UserModel::findOne(['mobile'=>$mobile]) )
-                return "手机号已经存在!";
+//            if( UserModel::findOne(['mobile'=>$mobile]) )
+//                return "手机号已经存在!";
             else
                 return true;
         }

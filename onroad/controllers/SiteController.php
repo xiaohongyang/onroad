@@ -4,7 +4,8 @@ namespace app\controllers;
 
 use app\models\RegisterModel;
 use app\models\RegisterUserInfoModel;
-use app\models\UserModel;
+use app\models\TeamModel;
+use app\models\UserIdentity;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
@@ -83,7 +84,7 @@ class SiteController extends BaseController
     {
         if (!Yii::$app->user->isGuest) {
 
-            $user = UserModel::findOne(['id' => Yii::$app->user->id]);
+            $user = UserIdentity::findOne(['id' => Yii::$app->user->id]);
             $userInfo = $user->userInfo;
             if(!$userInfo || !is_object($userInfo) || !$userInfo->id){
                 $this->redirect(Url::to('/site/register'));
@@ -171,5 +172,14 @@ class SiteController extends BaseController
         return $this->render('register', [
             'model' => $model
         ]);
+    }
+
+    public function actionTest(){
+        $teamModel = new TeamModel();
+        $driverId = 105;
+        $passengerId = 107;
+        $driver = UserIdentity::findOne(['id' => $driverId]);
+        $passenger = UserIdentity::findOne(['id' => $passengerId]);
+        $rs = $teamModel->create($driver, $passenger);
     }
 }

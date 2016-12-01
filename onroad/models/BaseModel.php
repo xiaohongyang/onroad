@@ -21,14 +21,25 @@ class BaseModel extends ActiveRecord
     const ROLE_PASSENGER = 1;
     const ROLE_DRIVER = 2;
 
-    public function beginTransaction(){
-        \Yii::$app->db->beginTransaction();
-    }
+    const CONT_MAX_FAMILY_NUMBER = 4;
+
+    public $message;
+
+
 
     public function create($data){
         $this->setScenario(self::SCENARIO_CREATE);
         if ($this->load($data) && $this->validate()) {
         }
     }
+
+    public static function getDbPrefix(){
+        return \Yii::$app->db->tablePrefix;
+    }
+
+    public function getConnection(){
+         return \Yii::$app->db;
+    }
+
 
 }

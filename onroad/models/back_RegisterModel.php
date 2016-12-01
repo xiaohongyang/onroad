@@ -174,7 +174,7 @@ class RegisterUserInfoModel extends BaseModel
                 }
             }
 
-            $model = new UserInfoModel();
+            $model = new UserInfoForm();
             $clockTimeArr = explode(':', $this->clockTime);
             list($clockTimeHour, $clockTimeMinutes) = $clockTimeArr;
 

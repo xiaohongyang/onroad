@@ -34,7 +34,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
     public static function findIdentity($id)
     {
 //        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
-        return UserModel::findOne(['id'=>$id]);
+        return UserIdentity::findOne(['id'=>$id]);
     }
 
     /**
@@ -49,7 +49,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
         }
 
         return null;*/
-        return UserModel::findOne(['accessToken' => $token]);
+        return UserIdentity::findOne(['accessToken' => $token]);
     }
 
     /**
@@ -67,7 +67,7 @@ class User extends \yii\base\Object implements \yii\web\IdentityInterface
         }
 
         return null;*/
-        return UserModel::findOne(['mobile'=>$mobile]);
+        return UserIdentity::findOne(['mobile'=>$mobile]);
     }
 
     /**

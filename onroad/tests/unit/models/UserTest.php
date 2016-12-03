@@ -1,15 +1,15 @@
 <?php
 namespace tests\models;
 use app\models\User;
+use app\models\UserModel;
 
 class UserTest extends \Codeception\Test\Unit
 {
     public function testFindUserById()
     {
-        expect_that($user = User::findIdentity(100));
+        expect_that($user = UserModel::findIdentity(100));
         expect($user->username)->equals('admin');
 
-        expect_not(User::findIdentity(999));
     }
 
     public function testFindUserByAccessToken()

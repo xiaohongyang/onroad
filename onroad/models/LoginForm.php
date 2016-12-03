@@ -47,12 +47,14 @@ class LoginForm extends Model
                 }else{
                     //创建成功,获取用户
                     $rs = true;
-                    Yii::$app->user->login($this->getUser($mobile),3600*24);
                 }
             } else {
                 $rs = true;
-                Yii::$app->user->login($this->getUser($mobile),3600*24);
             }
+        }
+        if($rs){
+            Yii::$app->user->login($this->getUser($mobile),3600*24);
+            UserModel::findOne(['mobile' => $mobile])->updateLoginTime();
         }
         return $rs;
     }
@@ -137,6 +139,9 @@ class LoginForm extends Model
      *  validate mobile code
      */
     public function checkMobileCode($mobile, $code){
+
+        if (Yii::$app->params['is_close_login_code_check'])
+            return true;
 
         return $this->getMobilecode($mobile) == $code;
     }

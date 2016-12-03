@@ -40,11 +40,7 @@
 					</div>
 				</form>
 
-				<ul id="bottom">
-                     <li class="border_rt"><a href="">找陪驾</a></li> 
-                     <li class="border_rt"><a href="index.html">通勤主页</a></li> 
-                     <li class="border_rt"><a href="rent_car.html">租车</a></li> 
-                     <li><a href="route.html">&nbsp;所有线路</a></li> 
+				<?=Yii::$app->view->render('../layouts/bottom.php');?>
         </ul>
 	</div>
 
@@ -60,7 +56,7 @@
 				<div class="modal-body" style="color: #000;">
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
 				</div>
 			</div>
 		</div>

@@ -7,10 +7,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <title>共享通勤_主页</title>
-    <script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
+    <!--<script src="/js/jquery-1.7.2.js" type="text/javascript"></script>
     <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+
+    <!--bootstrap start-->
+    <script src="/js/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!--bootstrap end-->
+
     <link rel="stylesheet" href="/css/public.css">
     <link rel="stylesheet" href="/css/index.css">
 </head>
@@ -49,11 +60,42 @@
         </ul>
     </div>
     <div id="fenge"></div>
-    <div id="my_route">
-        <p class="line1">我的通勤路线</p>
-        <p class="line2">暂未有合适路线匹配</p>
-        <a href=""><input type="button" value="马上匹配路线"></a>
-    </div>
+
+    <?php
+        if(is_null($teamModel)) {
+    ?>
+            <div id="my_route">
+                <p class="line1">我的通勤路线</p>
+                <p class="line2">暂未有合适路线匹配</p>
+                <a href="javascript:void(0)"><input type="button" class="btn-match" value="马上匹配路线"></a>
+            </div>
+    <?php
+        } else {
+    ?>
+            <div id="my_route2">
+                <p class="line1">我的通勤小组</p>
+                <p class="line2 exp" ><span>时间：</span>
+                    <span>
+                        <?=strlen($teamModel->driver->userInfo->clock_time_hour) == 1 ? 0: ''?><?=$teamModel->driver->userInfo->clock_time_hour?>:<?=strlen($teamModel->driver->userInfo->clock_time_minutes) == 1 ? 0: ''?><?=$teamModel->driver->userInfo->clock_time_minutes?>
+                    </span>
+                    —
+                    <span>
+                        <?=strlen($teamModel->driver->userInfo->off_duty_hour) == 1 ? 0: ''?><?=$teamModel->driver->userInfo->off_duty_hour?>:<?=strlen($teamModel->driver->userInfo->off_duty_minutes) == 1 ? 0: ''?><?=$teamModel->driver->userInfo->off_duty_minutes?>
+                    </span></p>
+                <p class="line3 exp"><span>起点：</span><span><?=$teamModel->driver->userInfo->home_address?>&lt;----&gt;</span><span>终点：</span><span><?=$teamModel->driver->userInfo->company_address?></span></p>
+                <ul>
+                    <li>等待</li>
+                    <a href="<?=Url::to(['/site/route-info','id'=>$teamModel->team_id])?>"><li>查看</li></a>
+                    <li>分享</li>
+                    <li>撤销</li>
+                </ul>
+            </div>
+    <?php
+        }
+    ?>
+
+
+
     <div id="myCarousel" class="carousel slide">
         <!-- 轮播（Carousel）指标 -->
         <ol class="carousel-indicators">
@@ -75,13 +117,26 @@
         <a class="carousel-control right" href="#myCarousel"
            data-slide="next"></a>-->
     </div>
-    <ul id="bottom">
-        <li class="border_rt"><a href="">找陪驾</a></li>
-        <li class="border_rt"><a href="index.html">通勤主页</a></li>
-        <li class="border_rt"><a href="rent_car.html">租车</a></li>
-        <li><a href="route.html">&nbsp;所有线路</a></li>
-    </ul>
+
+    <?=Yii::$app->view->render('../layouts/bottom.php');?>
 </div>
+
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modalLabel">提示</h4>
+                </div>
+                <div class="modal-body" style="color: #000;">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <script>
@@ -103,6 +158,38 @@
     })
 
 
+
+
+    $(function(){
+        $('.btn-match').click(function(){
+
+            var url = '<?=\yii\helpers\Url::to('/route/match')?>';
+            var data = {
+                _csrf : '<?=Yii::$app->request->getCsrfToken()?>',
+            };
+            $.ajax({
+                url : url,
+                data : data,
+                dataType : 'json',
+                type : 'post',
+                success : function (json) {
+                    if(json.status == '<?=STATUS_NOT_LOGIN?>'){
+                        window.location.href = '<?=Url::to(['/site/login'])?>';
+                        return;
+                    }
+                    var message = json.message;
+
+                    $('#modal').modal('show')
+                    $('.modal-body').html(message);
+                    if(json.status==1){
+                        $('#modal').on('hidden.bs.modal', function () {
+                            window.location.href = window.location.href;
+                        })
+                    }
+                }
+            })
+        })
+    })
 </script>
 
 </html>

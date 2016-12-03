@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/css/register.css">
     <!--<script src="/js/jquery-1.7.2.js" type="text/javascript"></script>-->
 
+    <!--bootstrap start-->
     <script src="/js/jquery/1.12.4/jquery.min.js" type="text/javascript"></script>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -18,6 +19,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!--bootstrap end-->
 
     <style type="text/css">
         #map-wrapper, #allmap {
@@ -50,7 +52,7 @@
     <input type="hidden"  id="addressTo" value="" />
 
     <div id="head">
-        <a href="<?=Url::to('/')?>"><span class="left"></span></a>
+        <a href="<?=Yii::$app->request->referrer?>"><span class="left"></span></a>
         <div class="center">填写资料</div>
         <button class="right" type="submit">确定</button>
     </div>
@@ -132,12 +134,7 @@
         $form::end();
     ?>
 
-    <ul id="bottom">
-        <li class="border_rt"><a href="/">找陪驾</a></li>
-        <li class="border_rt"><a href="/index.html">通勤主页</a></li>
-        <li class="border_rt"><a href="/rent_car.html">租车</a></li>
-        <li><a href="/route.html">&nbsp;所有线路</a></li>
-    </ul>
+    <?=Yii::$app->view->render('../layouts/bottom.php');?>
 
 
 </div>
@@ -206,6 +203,7 @@
             localSearch.search(keyword);
         }
 
+        var aavv = function(){}
 
         var setAddress = function(){
             $('#map-wrapper').show();
@@ -287,7 +285,7 @@
                 <div class="modal-body" style="color: #000;">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>

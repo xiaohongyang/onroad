@@ -59,11 +59,18 @@ class MatchModel extends BaseModel
      * @param $user
      * @return bool
      */
-    public function match($user){
+    public function match(UserModel $user){
 
-        $rs = $this->traversalMatchTeam($user);
-        if (!$rs) {
-            $rs = $this->traversalMatchUser($user);
+        $rs = false;
+        if($user->getUserStatus() != UserModel::CONST_STATUS_VALIDATE_SUCCESS) {
+            $this->message = "当前用户数据不完整,请先完善用户数据";
+        } else if($user->getAttribute('is_matched')){
+            $this->message = "当前用户已经匹配成功，不能重复进行匹配";
+        } else {
+            $rs = $this->traversalMatchTeam($user);
+            if (!$rs) {
+                $rs = $this->traversalMatchUser($user);
+            }
         }
         return $rs;
     }
@@ -111,12 +118,13 @@ class MatchModel extends BaseModel
     public function traversalMatchUser(UserModel $user) {
 
         $rs = false;
-        $isDriver = $user->role == BaseModel::ROLE_DRIVER;
+        $isDriver = $user->userInfo->getAttribute('role') == BaseModel::ROLE_DRIVER;
         $query = UserModel::find();
         $query->where(['is_matched' => 0]);
+        $query->where(['<>', 'id', $user->getAttributeHint('id')]);
         if (! $isDriver) {
             //乘客只能和司机匹配
-            $query->andWhere(['role' => BaseModel::ROLE_PASSENGER]);
+            $query->andWhere(['in','id' , UserInfoModel::find()->where(['role'=>BaseModel::ROLE_DRIVER])->select('user_id')]);
         }
         $userList = $query->all();
 
@@ -148,7 +156,9 @@ class MatchModel extends BaseModel
     public function matchUser(UserModel $driver, UserModel $passenger) {
 
         $result = true;
-        if (! $this->isBeginDistanceOk($driver, $passenger) ){
+        if(!$driver->userInfo || !$passenger->userInfo){
+            $result = false;
+        } else if (! $this->isBeginDistanceOk($driver, $passenger) ){
             $result = false;
         } else if (! $this->isEndDistanceOk($driver, $passenger)) {
             $result = false;
@@ -168,15 +178,20 @@ class MatchModel extends BaseModel
      * @param UserModel $passanger
      * @return bool
      */
-    private function isBeginDistanceOk(UserModel $driver, UserModel $passenger) {
+    public function isBeginDistanceOk(UserModel $driver, UserModel $passenger) {
 
-        $lng1 = $driver->getHomeLongitude();
-        $lat1 = $driver->getHomeLatitude();
+        $lng1 = $driver->userInfo->getHomeLongitude();
+        $lat1 = $driver->userInfo->getHomeLatitude();
 
-        $lng2 = $passenger->getHomeLongitude();
-        $lat2 = $passenger->getHomeLatitude();
+        $lng2 = $passenger->userInfo->getHomeLongitude();
+        $lat2 = $passenger->userInfo->getHomeLatitude();
+
+        if(!($lng1 && $lat1 && $lng2 && $lat2)) {
+            //经纬度不存在,匹配失败
+            return false;
+        }
         $distance = MapHelper::getdistance($lng1, $lat1, $lng2, $lat2);
-        $rs = abs($distance) <= self::getBeginDistanceLimit();
+        $rs =  abs($distance) <= self::getBeginDistanceLimit();
         return $rs;
     }
 
@@ -186,45 +201,65 @@ class MatchModel extends BaseModel
      * @param UserModel $passenger
      * @return bool
      */
-    private function isEndDistanceOk(UserModel $driver, UserModel $passenger) {
+    public function isEndDistanceOk(UserModel $driver, UserModel $passenger) {
 
-        $lng1 = $driver->getCompanyLongitude();
-        $lat1 = $driver->getCompanyLatitude();
+        $lng1 = $driver->userInfo->getCompanyLongitude();
+        $lat1 = $driver->userInfo->getCompanyLatitude();
 
-        $lng2 = $passenger->getCompanyLongitude();
-        $lat2 = $passenger->getCompanyLatitude();
-        $distance = MapHelper::getdistance($lng1, $lat1, $lng2, $lat2);
-        $rs = abs($distance) <= self::getBeginDistanceLimit();
-        return $rs;
+        $lng2 = $passenger->userInfo->getCompanyLongitude();
+        $lat2 = $passenger->userInfo->getCompanyLatitude();
+
+        if(!($lng1 && $lat1 && $lng2 && $lat2)) {
+            //经纬度不存在,匹配失败
+            return false;
+        } else {
+            $distance = MapHelper::getdistance($lng1, $lat1, $lng2, $lat2);
+            $rs = abs($distance) <= self::getBeginDistanceLimit();
+            return $rs;
+        }
     }
 
     /**
-     * 判断乘客与司机的上班时间是否符合要求
+     * 判断乘客与司机的上班时间是否符合要求,双方的“上班”时间是否一致或比司机晚30分钟
      * @param UserModel $driver
      * @param UserModel $passenger
      * @return bool
      */
-    private function isTimeClockOk(UserModel $driver, UserModel $passenger) {
+    public function isTimeClockOk(UserModel $driver, UserModel $passenger) {
 
-        $driverClockTime = $driver->_getClockTimeMinutes();
-        $passengerClockTime = $passenger->_getClockTimeMinutes();
+        $driverInfoModel = $driver->userInfo;
+        $passengerInfoModel = $passenger->userInfo;
 
-        $rs = $passengerClockTime - $driverClockTime > self::getClockTimeMinutesLimit();
+        if(!$driverInfoModel instanceof UserInfoModel || !$passengerInfoModel instanceof UserInfoModel)
+            return false;
+        $driverClockTime = $driverInfoModel->getClockTimeMinutes();
+        $passengerClockTime = $passengerInfoModel->getClockTimeMinutes();
+
+        $diffTime = $passengerClockTime - $driverClockTime;
+        $rs = $diffTime >= self::getClockTimeMinutesLimit() || $diffTime == 0;
+
         return $rs;
     }
 
     /**
-     * 判断乘客与司机的下班时间是否符合要求
+     * 判断乘客与司机的下班时间是否符合要求, 双方的“下班”时间是否一致或比司机早30分钟
      * @param UserModel $driver
      * @param UserModel $passenger
      * @return bool
      */
-    private function isOffDutyClockOk(UserModel $driver, UserModel $passenger) {
+    public function isOffDutyClockOk(UserModel $driver, UserModel $passenger) {
 
-        $driverOffDutyTime = $driver->_getOffDutyMinutes();
-        $passengerOffDutyTime = $passenger->_getOffDutyMinutes();
+        $driverInfoModel = $driver->userInfo;
+        $passengerInfoModel = $passenger->userInfo;
 
-        $rs = $driverOffDutyTime - $passengerOffDutyTime > self::getOffDutyMinutesLimit();
+        if(!$driverInfoModel instanceof UserInfoModel || !$passengerInfoModel instanceof UserInfoModel)
+            return false;
+        $driverOffDuty = $driverInfoModel->getOffDutyMinutes();
+        $passengerOffDuty = $passengerInfoModel->getOffDutyMinutes();
+
+        $diffTime = $driverOffDuty - $passengerOffDuty;
+        $rs = $diffTime >= self::getOffDutyMinutesLimit() || $diffTime == 0;
+
         return $rs;
     }
     #endregion

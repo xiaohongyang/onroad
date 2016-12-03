@@ -11,7 +11,7 @@
 <body>
     <div id="bg">
         <div id="head">
-           <a href="rent_car.html"><span class="left"></span></a>
+           <a href="<?=Yii::$app->request->referrer?>"><span class="left"></span></a>
             <div class="center">车型参数配置</div>
             <span class="right_img"></span>
             <ul class="down_list"> 
@@ -89,12 +89,7 @@
 
 
 
-          <ul id="bottom">
-                     <li class="border_rt"><a href="">找陪驾</a></li> 
-                     <li class="border_rt"><a href="index.html">通勤主页</a></li> 
-                     <li class="border_rt"><a href="rent_car.html">租车</a></li> 
-                     <li><a href="route.html">&nbsp;所有线路</a></li> 
-        </ul>
+            <?=Yii::$app->view->render('../layouts/bottom.php');?>
     </div>
 </body>
 

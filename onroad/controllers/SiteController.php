@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\RegisterModel;
 use app\models\RegisterUserInfoModel;
 use app\models\TeamModel;
+use app\models\TeamUserModel;
 use app\models\UserIdentity;
 use Yii;
 use yii\filters\AccessControl;
@@ -72,7 +73,18 @@ class SiteController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $teamModel = null;
+        if(!Yii::$app->user->isGuest) {
+
+            $userId = Yii::$app->user->identity->getId();
+
+            $teamIds = TeamUserModel::find()->where(['user_id' => $userId])->select('team_id')->one() ;
+            $teamModel = TeamModel::findOne([  'team_id' => $teamIds]);
+        }
+
+        return $this->render('index', [
+            'teamModel' => $teamModel
+        ]);
     }
 
     /**
@@ -99,10 +111,8 @@ class SiteController extends BaseController
 
             if ($model->login()) {
                 return $this->redirect(Url::to('/site/register'));
-            } else {
-                if(Yii::$app->request->post('mobile')){
-                    $model->mobile = Yii::$app->request->post('mobile');
-                }
+            } else if(Yii::$app->request->post('mobile')) {
+                $model->mobile = Yii::$app->request->post('mobile');
             }
         }
         return $this->render('login', [
@@ -153,6 +163,9 @@ class SiteController extends BaseController
 
     public function actionRegister(){
 
+        if (!is_null(Yii::$app->user->identity->userInfo))
+            return $this->redirect(Url::to('/'));
+
         $this->layout = false;
         $model = new RegisterUserInfoModel();
 
@@ -161,6 +174,7 @@ class SiteController extends BaseController
         $model->sex = 1;
         $model->role = 1;
         $model->mobile = Yii::$app->user->identity->mobile;
+
 
         if(Yii::$app->request->isPost){
             if($model->create(Yii::$app->request->post())){
@@ -174,12 +188,40 @@ class SiteController extends BaseController
         ]);
     }
 
+    public function actionRouteInfo(){
+
+        $teamId = \Yii::$app->request->get('id');
+        $teamModel = TeamModel::findOne(['team_id' => $teamId]);
+
+        return $this->render('route_info', ['teamModel' => $teamModel]);
+
+    }
+    public function actionRouteList(){
+
+        $teamList = TeamModel::find()->where(['>', 'team_id', 0])->all();
+        return $this->render('teamList', ['teamList' => $teamList]);
+    }
+
+    public function actionRentCar(){
+        return $this->render('rentCar');
+    }
+
+    public function actionRentCarInfo(){
+        return $this->render('rentCarInfo');
+    }
+
+    public function actionRentCarType(){
+        return $this->render('rentCarType');
+    }
+
     public function actionTest(){
-        $teamModel = new TeamModel();
+
+        return $this->render('route_info');
+       /* $teamModel = new TeamModel();
         $driverId = 105;
         $passengerId = 107;
         $driver = UserIdentity::findOne(['id' => $driverId]);
         $passenger = UserIdentity::findOne(['id' => $passengerId]);
-        $rs = $teamModel->create($driver, $passenger);
+        $rs = $teamModel->create($driver, $passenger);*/
     }
 }

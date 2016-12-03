@@ -7,7 +7,7 @@ body{background-color: rgb(228,228,228);}
 
 
 #route_list{width:15.7rem;margin: 0 auto;padding-bottom: 2.2rem;font-size: 0;}
-#route_list li{width: 15.7rem;height: 6.5rem;background-color: white;border-radius: 3px;display: inline-block;margin-top:0.2rem; }
+#route_list li{width: 15.7rem;height: 8rem;background-color: white;border-radius: 3px;display: inline-block;margin-top:0.2rem; }
 
 #my_route p{font-size:0.7rem;color: black;margin-top:0.5rem;text-align: center;}
 #my_route .exp{text-align: left;margin-left:0.5rem; }

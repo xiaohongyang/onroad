@@ -1,3 +1,6 @@
+<?php
+    use \yii\helpers\Url;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +15,7 @@
 <body>
     <div id="bg">
         <div id="head">
-           <a href="index.html"><span class="left"></span></a>
+           <a href="<?=Yii::$app->request->referrer?>"><span class="left"></span></a>
             <div class="center">租车</div>
             <span class="right_img"></span>
             <ul class="down_list"> 
@@ -25,22 +28,17 @@
         <ul id="cp_list">
 
             <li>
-                <img src="imges/car_rt.png" alt="">
-                <a href="rent_car_data.html"><span>车型参数</span></a>
-                <a href="rent_car_type.html"><span>租车方式</span></a>
+                <img src="/imges/car_rt.png" alt="">
+                <a href="<?=Url::to(['/site/rent-car-info'])?>"><span>车型参数</span></a>
+                <a href="<?=Url::to(['/site/rent-car-type'])?>"><span>租车方式</span></a>
             </li>
              <li>
-                <img src="imges/car_rt.png" alt="">
-                <a href="rent_car_data.html"><span>车型参数</span></a>
-                <a href="rent_car_type.html"><span>租车方式</span></a>
+                <img src="/imges/car_rt.png" alt="">
+                <a href="<?=Url::to(['/site/rent-car-info'])?>"><span>车型参数</span></a>
+                <a href="<?=Url::to(['/site/rent-car-type'])?>"><span>租车方式</span></a>
             </li>
         </ul>
-         <ul id="bottom">
-                     <li class="border_rt"><a href="">找陪驾</a></li> 
-                     <li class="border_rt"><a href="index.html">通勤主页</a></li> 
-                     <li class="border_rt"><a href="rent_car.html">租车</a></li> 
-                     <li><a href="route.html">&nbsp;所有线路</a></li> 
-        </ul>
+        <?=Yii::$app->view->render('../layouts/bottom.php');?>
     </div>
 </body>
 

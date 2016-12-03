@@ -51,15 +51,10 @@
                        data-slide="prev">&lsaquo;</a>
                     <a class="carousel-control right" href="#myCarousel" 
                        data-slide="next">&rsaquo;</a>-->
-        </div> 
+        </div>
 
 
-       <ul id="bottom">
-                     <li class="border_rt"><a href="">找陪驾</a></li> 
-                     <li class="border_rt"><a href="index.html">通勤主页</a></li> 
-                     <li class="border_rt"><a href="rent_car.html">租车</a></li> 
-                     <li><a href="route.html">&nbsp;所有线路</a></li> 
-        </ul>
+        <?=Yii::$app->view->render('../layouts/bottom.php');?>
     </div>
 </body>
 

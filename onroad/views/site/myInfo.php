@@ -1,5 +1,16 @@
 <?php
 use \yii\helpers\Url;
+
+
+$clockTimeHour = !is_null($model->clock_time_hour) ? $model->clock_time_hour : $model->driver->userInfo->clock_time_hour;
+$clockTimeHour = strlen($clockTimeHour)==1 ? '0'.$clockTimeHour : $clockTimeHour;
+$clockTimeMinutes = !is_null($model->clock_time_minutes) ? $model->clock_time_minutes : $model->driver->userInfo->clock_time_minutes;
+$clockTimeMinutes = strlen($clockTimeMinutes)==1 ? '0'.$clockTimeMinutes : $clockTimeMinutes;
+
+$offDutyHour = !is_null($model->off_duty_hour) ? $model->off_duty_hour : $model->driver->userInfo->off_duty_hour;
+$offDutyHour = strlen($offDutyHour)==1 ? '0'.$offDutyHour : $offDutyHour;
+$offDutyMinutes = !is_null($model->off_duty_minutes) ? $model->off_duty_minutes : $model->driver->userInfo->off_duty_minutes;
+$offDutyMinutes = strlen($offDutyMinutes)==1 ? '0'.$offDutyMinutes : $offDutyMinutes;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -71,55 +82,49 @@ use \yii\helpers\Url;
 
     <div id="head">
         <a href="<?=Url::to(['/'])?>"><span class="left"></span></a>
-        <div class="center">填写资料</div>
-        <button class="right" type="submit">确定</button>
+        <div class="center">我的信息</div>
+        <!--<button class="right" type="submit">确定</button>-->
     </div>
     <div id="content">
 
         <?=$form->field($model, 'mobile', ['options'=>[
             'class' => 'phone_no'
-        ]])->textInput(['class'=>'tt','readonly'=>'readonly'])->label('手机号码：',['class'=>'sign'])->error(['class'=>'warning'])?>
+        ]])->textInput(['class'=>'tt','readonly'=>'readonly', 'value'=> $model->user->mobile])->label('手机号码：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
 
         <?=$form->field($model, 'sex', ['options'=>[
             'class' => 'phone_no',
-        ]])->radioList([1=>'男', 2=>'女'],['class'=>'tt inline'])->label('性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：',['class'=>'sign'])->error(['class'=>'warning'])?>
+        ]])->radioList([1=>'男', 2=>'女'],['class'=>'tt inline', 'disabled'=>'disabled', 'value'=>$model->user->userInfo->sex])->label('性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
         <?=$form->field($model, 'clockTime', ['options'=>[
             'class' => 'phone_no',
-        ]])->textInput(['class'=>'tt', 'type'=>'time'])->label('上班时间：',['class'=>'sign'])->error(['class'=>'warning'])?>
+        ]])->textInput(['class'=>'tt', 'type'=>'time',  'readonly'=>'readonly', 'value' => $clockTimeHour.':'.$clockTimeMinutes])->label('上班时间：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
         <?=$form->field($model, 'offDutyTime', ['options'=>[
             'class' => 'phone_no',
-        ]])->textInput(['class'=>'tt', 'type'=>'time'])->label('下班时间：',['class'=>'sign'])->error(['class'=>'warning'])?>
+        ]])->textInput(['class'=>'tt', 'type'=>'time',  'readonly'=>'readonly', 'value' => $offDutyHour.':'.$offDutyMinutes])->label('下班时间：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
 
         <div class="xiaban_time">
             <span class="sign">家庭住址：</span>
-            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[homeAddress]" id="homeAddress" readonly="readonly" class="tt ">
-            <span class="bt_mp" onclick="setAddress(); return false;">地图</span>
+            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[homeAddress]"  value="<?=$model->home_address?>" id="homeAddress" readonly="readonly" class="tt ">
+           <!--<span class="bt_mp" onclick="setAddress(); return false;">地图</span>-->
         </div>
         <div class="shangban_time ex">
             <div class="fenge"></div>
             <span class="sign">公司住址：</span>
-            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[companyAddress]" id="companyAddress" readonly="readonly" class="tt">
-            <span class="bt_mp" onclick="setCompanyAddress(); return false;">地图</span>
+            <input type="text" placeholder="请点击地图选择住址" name="<?=$model->formName()?>[companyAddress]" value="<?=$model->company_address?>" id="companyAddress" readonly="readonly" class="tt">
+            <!--<span class="bt_mp" onclick="setCompanyAddress(); return false;">地图</span>-->
         </div>
 
-        <div class="jslx">
-            <span class="sign">角色类型：</span>
-            <input type="radio" name="<?=$model->formName()?>[role]" value="1" checked="checked" class="ck">乘客
-            <input type="radio" name="<?=$model->formName()?>[role]" value="2" class="sj">司机
-        </div>
+        <?=$form->field($model, 'role', ['options'=>[
+            'class' => 'jslx',
+        ]])->radioList([1=>'乘客', 2=>'司机'],['class'=>'tt inline', 'readonly'=>'readonly',  'value'=>$model->user->userInfo->role])->label('角色类型：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
 
-        <div class="intime">
-            <span class="sign">&nbsp;准&nbsp;时&nbsp;性：</span>
-            <input type="radio" name="<?=$model->formName()?>[timeliness]" value="1" checked="checked">准时
-            <input type="radio" name="<?=$model->formName()?>[timeliness]" value="2">一般
-            <input type="radio" name="<?=$model->formName()?>[timeliness]" value="3">不准时
-        </div>
-
+        <?=$form->field($model, 'timeliness', ['options'=>[
+            'class' => 'intime',
+        ]])->radioList([1=>'准时', 2=>'一般', 3=>'不准时'],['class'=>'tt inline', 'readonly'=>'readonly',  'value'=>$model->user->userInfo->role])->label('&nbsp;准&nbsp;时&nbsp;性：',['class'=>'sign'])->error(['class'=>'warning'])?>
 
         <div id="up_idcard">
             <span class="head">请上传证件</span>
@@ -274,19 +279,17 @@ use \yii\helpers\Url;
     <?php
         if($currentAddExist) {
     ?>
-            setTimeout(function(){
-                var point = new BMap.Point(<?=$currentAddInfo['content']['point']['x']?>,<?=$currentAddInfo['content']['point']['y']?>);
-                map.centerAndZoom(point,12);
-                var geoc = new BMap.Geocoder();
+            var point = new BMap.Point(<?=$currentAddInfo['content']['point']['x']?>,<?=$currentAddInfo['content']['point']['y']?>);
+            map.centerAndZoom(point,12);
+            var geoc = new BMap.Geocoder();
 
-                geoc.getLocation(point, function(rs){
-                    var addComp = rs.addressComponents;
-                    var address = (addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber)
-                    console.log(address);
-                    $('#text_').val(address);
-                    searchByStationName();
-                });
-            },200)
+            geoc.getLocation(point, function(rs){
+                var addComp = rs.addressComponents;
+                var address = (addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber)
+                console.log(address);
+                $('#text_').val(address);
+                searchByStationName();
+            });
     <?php
         }
     ?>

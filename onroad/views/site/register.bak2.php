@@ -37,12 +37,9 @@ use \yii\helpers\Url;
             z-index: 9999;
         }
 
-        .tangram-suggestion-main table tr, .tangram-suggestion-main table tr td{
-            height:22px !important;
-            line-height:22px !important;;
-            margin-top:0;
-            margin-bottom: 0;
-
+        .tangram-suggestion-main table tr{
+            height:20px;
+            line-height:20px;
         }
         .tangram-suggestion .route-icon {
             overflow: hidden;
@@ -163,9 +160,9 @@ use \yii\helpers\Url;
         <input id="result_" type="hidden" />
         <button class="btn btn-primary" onclick="searchByStationName();">查询</button>
         <button class="btn btn-primary btn-yes"  >确定</button>
-        <!--<button class="btn btn-primary btn-no"  >取消</button>-->
+        <button class="btn btn-primary btn-no"  >取消</button>
         <br/>
-        <!--<div class="warning map_warning" style="margin-left: 5px;">-->
+        <div class="warning map_warning" style="margin-left: 5px;">
 
         </div>
         <div id="container" style="position: absolute; margin-top:30px; width: 100%; height: 80%; top:15px; border: 1px solid gray; overflow:hidden;">
@@ -190,65 +187,21 @@ use \yii\helpers\Url;
     map.addControl(new BMap.OverviewMapControl()); //添加默认缩略地图控件
     map.addControl(new BMap.OverviewMapControl({isOpen: true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT}));   //右下角，打开
 
-    var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
-        {"input" : "text_"
-            ,"location" : map
-        });
-
-    ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
-        var str = "";
-        var _value = e.fromitem.value;
-        var value = "";
-        if (e.fromitem.index > -1) {
-            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-        }
-        str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
-
-        value = "";
-        if (e.toitem.index > -1) {
-            _value = e.toitem.value;
-            value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-        }
-        str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
-        //G("searchResultPanel").innerHTML = str;
-    });
-
-    var myValue;
-    ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
-        var _value = e.item.value;
-        myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-        //G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
-
-        setPlace();
-    });
-
-    function setPlace(){// 创建地址解析器实例
-        var myGeo = new BMap.Geocoder();// 将地址解析结果显示在地图上,并调整地图视野
-        myGeo.getPoint(myValue, function(point){
-            if (point) {
-                map.centerAndZoom(point, 16);
-                map.addOverlay(new BMap.Marker(point));
-            }
-        }, "杭州");
-
-        map.clearOverlays();//清空原来的标注
-        setTimeout(function(){
-            searchByStationName()
-        },200)
-
-    }
 
     var localSearch = new BMap.LocalSearch(map);
     localSearch.enableAutoViewport(); //允许自动调节窗体大小
     function searchByStationName() {
         map.clearOverlays();//清空原来的标注
-        var keyword = document.getElementById("text_").value;
 
+        var keyword = document.getElementById("text_").value;
 
         localSearch.setSearchCompleteCallback(function (searchResult) {
 
-
-            var poi = searchResult.getPoi(0);
+            var defaultPoint = false;
+            if(!searchResult){
+                return;
+            }
+            var poi = defaultPoint ? defaultPoint : searchResult.getPoi(0);
             if (poi) {
                 document.getElementById("result_").value = poi.point.lng + "," + poi.point.lat;
                 map.centerAndZoom(poi.point, 13);
@@ -271,26 +224,51 @@ use \yii\helpers\Url;
         localSearch.search(keyword);
     }
 
-    <?php
-        if($currentAddExist) {
-    ?>
-            setTimeout(function(){
-                var point = new BMap.Point(<?=$currentAddInfo['content']['point']['x']?>,<?=$currentAddInfo['content']['point']['y']?>);
-                map.centerAndZoom(point,12);
-                var geoc = new BMap.Geocoder();
+    setTimeout(function(){
+        var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+            {"input" : "text_"
+                ,"location" : map
+            });
 
-                geoc.getLocation(point, function(rs){
-                    var addComp = rs.addressComponents;
-                    var address = (addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber)
-                    console.log(address);
-                    $('#text_').val(address);
-                    searchByStationName();
-                });
-            },200)
-    <?php
+        ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+            var str = "";
+            var _value = e.fromitem.value;
+            var value = "";
+            if (e.fromitem.index > -1) {
+                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            }
+            str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+            value = "";
+            if (e.toitem.index > -1) {
+                _value = e.toitem.value;
+                value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            }
+            str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+            //G("searchResultPanel").innerHTML = str;
+        });
+
+        var myValue;
+        ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+            var _value = e.item.value;
+            myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+            //G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+
+            searchByStationName()
+        });
+
+        function setPlace(){// 创建地址解析器实例
+            var myGeo = new BMap.Geocoder();// 将地址解析结果显示在地图上,并调整地图视野
+            myGeo.getPoint(myValue, function(point){
+                if (point) {
+                    map.centerAndZoom(point, 16);
+                    map.addOverlay(new BMap.Marker(point));
+                }
+            }, "杭州市西湖区西湖区");
         }
-    ?>
 
+        searchByStationName()
+    },1000)
 
 
     var aavv = function(){}

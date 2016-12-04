@@ -37,6 +37,11 @@ class RegisterUserInfoModel extends BaseModel
         return \Yii::$app->db->tablePrefix.'user_info';
     }
 
+    public function getUser(){
+        return $this->hasOne(UserModel::className(), [
+            'id' => 'user_id'
+        ]);
+    }
 
     public $mobile;
 

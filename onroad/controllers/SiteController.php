@@ -2,18 +2,26 @@
 
 namespace app\controllers;
 
+use app\common\components\helpers\MapHelper;
+use app\common\components\helpers\ToolsHelper;
+use app\common\components\helpers\WeChatHelper;
 use app\models\RegisterModel;
 use app\models\RegisterUserInfoModel;
 use app\models\TeamModel;
 use app\models\TeamUserModel;
 use app\models\UserIdentity;
+use app\models\UserModel;
+use app\models\WeChatModel;
+use linslin\yii2\curl\Curl;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\web\Cookie;
 
 class SiteController extends BaseController
 {
@@ -94,6 +102,32 @@ class SiteController extends BaseController
      */
     public function actionLogin()
     {
+
+        if(ToolsHelper::isWeChatBrowser()) {
+
+            $wxOpenid = Yii::$app->request->get('wxOpenid');
+            if(!$wxOpenid){
+                $cookies = Yii::$app->request->cookies;
+                if(!$cookies->has('wxOpenid')){
+                    $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2887eeeac1e7d898&redirect_uri=" . urlencode("http://gx.xjc1.com/wx/oauth2") . "&response_type=code&scope=snsapi_base&state=1#wechat_redirect";
+                    header("Location:$url");
+                    return false;
+                } else {
+                    /*var_dump($cookies->get('wxOpenid'));
+                    echo '<br/>';
+                    var_dump($cookies->get('wxOpenid')->value);*/
+                }
+            }else{
+                //cookie('wxOpenid',$wxOpenid,36000000000);
+                $cookies = Yii::$app->response->cookies;
+                $cookies->add(new Cookie([
+                    'name' => wxOpenid,
+                    'value' => $wxOpenid,
+                    'expire' => 36000000000
+                ]));
+            }
+        }
+
         if (!Yii::$app->user->isGuest) {
 
             $user = UserIdentity::findOne(['id' => Yii::$app->user->id]);
@@ -183,8 +217,26 @@ class SiteController extends BaseController
             }
         }
 
+        $currentAddInfo = MapHelper::getCurrentInfo();
+//        print_r($currentAddInfo);exit;
+        $currentAddExist = false;
+
+
+        if(is_array($currentAddInfo) && count($currentAddInfo) && key_exists('status', $currentAddInfo) && $currentAddInfo['status']==0 ){
+            if(key_exists('content', $currentAddInfo)) {
+                $content = $currentAddInfo['content'];
+                if(is_array($content) && key_exists('address', $content)) {
+                    $currentAddExist = true;
+                    $currentAddInfo['point'] = $content['point']['x'] . ',' . $content['point']['y'];
+                }
+            }
+        }
+
+
         return $this->render('register', [
-            'model' => $model
+            'model' => $model,
+            'currentAddInfo' => $currentAddInfo,
+            'currentAddExist' => $currentAddExist
         ]);
     }
 
@@ -216,6 +268,41 @@ class SiteController extends BaseController
 
     public function actionTest(){
 
+
+//        var_dump($user->open_id);
+//        $info = $user->getWeChatInfo();
+//
+//        print_r($info);
+//        $info = ArrayHelper::toArray($info);
+//        $info['user_id'] = Yii::$app->user->identity->getId();
+//
+//        $weChatModel = new WeChatModel();
+//        $rs = $weChatModel->createOrEdit($info);
+//        var_dump($rs);
+        exit;
+
+
+        $info = MapHelper::getCurrentInfo();
+        print_r($info);
+        exit;
+
+        $ip = file_get_contents("http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js");
+        // 如果还要二次处理的话那么
+        $ip = preg_replace('/[^/{]+(/{[^;]+);/i', '//1', $ip);
+
+        $data = array();
+        foreach(json_decode($ip, true) as $k => $v) {
+            if($k == 'country') {
+                $v = iconv('gb2312', 'utf-8', '你在').$v;
+            }
+            $data[$k] = $v;
+        }
+
+        $ip = 'var arr = ' . json_encode($data);
+        print_r($ip);
+        print_r($data);
+        exit;
+
         return $this->render('route_info');
        /* $teamModel = new TeamModel();
         $driverId = 105;
@@ -223,5 +310,18 @@ class SiteController extends BaseController
         $driver = UserIdentity::findOne(['id' => $driverId]);
         $passenger = UserIdentity::findOne(['id' => $passengerId]);
         $rs = $teamModel->create($driver, $passenger);*/
+    }
+
+    public function actionMyInfo(){
+
+        $this->checkLogin();
+
+        $userInfoModel = RegisterUserInfoModel::findOne(['user_id' => Yii::$app->user->identity->getId()]);
+        if(!$userInfoModel)
+            return $this->redirect(Url::to(['/site/register']));
+
+        return $this->render('myInfo', [
+            'model' => $userInfoModel
+        ]);
     }
 }

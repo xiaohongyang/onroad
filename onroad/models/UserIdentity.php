@@ -11,7 +11,7 @@ namespace app\models;
 
 use yii\web\IdentityInterface;
 
-class UserIdentity extends BaseModel implements IdentityInterface
+class UserIdentity extends UserModel  implements IdentityInterface
 {
     public static function tableName()
     {
@@ -105,4 +105,14 @@ class UserIdentity extends BaseModel implements IdentityInterface
         // TODO: Implement validateAuthKey() method.
         return $this->getAuthKey() == $authKey;
     }
+
+
+    public function getUserModel(){
+        return UserModel::findOne(['id' => $this->getId()]);
+    }
+
+    public function getNickName(){
+        return is_null($this->getWeChat()) ? $this->mobile : $this->weChat->nickname;
+    }
+
 }

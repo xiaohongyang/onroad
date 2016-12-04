@@ -23,6 +23,18 @@ class testMatchModelTest extends \Codeception\Test\Unit
     // tests
     public function testMe()
     {
+
+        $matchModel = new MatchModel();
+        $user = UserModel::findOne(['id' => 119]);
+        $query = UserModel::find()->where(['>', 'id', 119]);
+        $userList = $query->all();
+        foreach ($userList as $user02) {
+            $rs = $matchModel->matchUser($user, $user02);
+            if($rs )
+                break;
+        }
+
+        $this->assertEquals($rs, true);
     }
 
     public function testMatchUser(){

@@ -31,4 +31,19 @@ class MapHelper
         return $s;
     }
 
+
+
+
+    /**
+     * 获取当前位置信息
+     * @return mixed
+     */
+    public static function getCurrentInfo() {
+
+        $getIp=  \Yii::$app->params['is_develop'] ? '36.149.133.157' : ($user_IP = ($_SERVER["HTTP_VIA"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : $_SERVER["REMOTE_ADDR"]);
+        $content = file_get_contents("http://api.map.baidu.com/location/ip?ak=920E6C371bbd1dcb49177014025a28c8&ip={$getIp}&coor=bd09ll");
+        $json = json_decode($content, JSON_UNESCAPED_UNICODE);
+        return $json;
+    }
+
 }

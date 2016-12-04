@@ -1,6 +1,8 @@
 <?php
 
+require_once ( dirname(__FILE__ ) . '/../common/components/helpers/ToolsHelper.php');
 require_once ( dirname(__FILE__ ) . '/../common/components/helpers/MobileMsgAliHelpers.php');
+require_once ( dirname(__FILE__ ) . '/../common/components/helpers/WeChatHelper.php');
 
 $params = require(__DIR__ . '/params.php');
 
@@ -17,7 +19,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\UserIdentity',
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [

@@ -54,7 +54,12 @@ class LoginForm extends Model
         }
         if($rs){
             Yii::$app->user->login($this->getUser($mobile),3600*24);
-            UserModel::findOne(['mobile' => $mobile])->updateLoginTime();
+            //登录成功后
+            $user = UserModel::findOne(['mobile' => $mobile]);
+            $user->updateLoginTime();
+            if ($this->getWeChatOpenId()){
+                $user->updateWeChat($this->getWeChatOpenId());
+            }
         }
         return $rs;
     }
@@ -68,6 +73,11 @@ class LoginForm extends Model
         return $this->_user;
     }
 
+
+    public function getWeChatOpenId(){
+        $cookies = \Yii::$app->request->cookies;
+        return $cookies->has('wxOpenid') ? $cookies->get('wxOpenid')->value : '' ;
+    }
 
     public function getMobileCheckcode($mobile){
 

@@ -59,7 +59,7 @@ class MatchModel extends BaseModel
      * @param $user
      * @return bool
      */
-    public function match(UserModel $user){
+    public function match(UserModel $user, $autoMatchOtherUser=false){
 
         $rs = false;
         if($user->getUserStatus() != UserModel::CONST_STATUS_VALIDATE_SUCCESS) {
@@ -72,8 +72,21 @@ class MatchModel extends BaseModel
                 $rs = $this->traversalMatchUser($user);
             }
         }
+
+        if($autoMatchOtherUser)
+            $this->autoMatchAllUser();
         return $rs;
     }
+
+    public function autoMatchAllUser(){
+        $users = UserModel::find()->where(['is_matched' => 0])->all();
+        if(is_array($users) && count($users)) {
+            foreach ($users as $user) {
+                $this->match($user, false);
+            }
+        }
+    }
+
 
     /**
      * @param $user
@@ -164,9 +177,9 @@ class MatchModel extends BaseModel
             $result = false;
         } else if (! $this->isTimeClockOk($driver, $passenger)) {
             $result = false;
-        } else if (! $this->isOffDutyClockOk($driver, $passenger)) {
+        }/* else if (! $this->isOffDutyClockOk($driver, $passenger)) {
             $result = false;
-        }
+        }*/
         return $result;
     }
 
@@ -220,7 +233,8 @@ class MatchModel extends BaseModel
     }
 
     /**
-     * 判断乘客与司机的上班时间是否符合要求,双方的“上班”时间是否一致或比司机晚30分钟
+     * //判断乘客与司机的上班时间是否符合要求,(旧的条件: 双方的“上班”时间是否一致或比司机晚30分钟)
+     * (新的条件: 乘客上班时间等于乘客或晚于司机30分钟，比如司机9点，乘客在9-9点半之间)
      * @param UserModel $driver
      * @param UserModel $passenger
      * @return bool
@@ -236,7 +250,7 @@ class MatchModel extends BaseModel
         $passengerClockTime = $passengerInfoModel->getClockTimeMinutes();
 
         $diffTime = $passengerClockTime - $driverClockTime;
-        $rs = $diffTime >= self::getClockTimeMinutesLimit() || $diffTime == 0;
+        $rs = $diffTime >=0 && $diffTime <= self::getClockTimeMinutesLimit();
 
         return $rs;
     }

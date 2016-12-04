@@ -26,6 +26,11 @@ class RegisterUserInfoModel extends BaseModel
         ];
     }
 
+    public function getUser(){
+        return $this->hasOne(UserModel::className(), [
+            'id' => 'user_id'
+        ]);
+    }
 
     public static function tableName()
     {

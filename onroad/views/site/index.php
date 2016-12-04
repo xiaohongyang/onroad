@@ -28,8 +28,8 @@
 <body>
 <div id="bg">
     <div id="head">
-        <img src="imges/logo_head.png" alt="" class="logo">
-        <span class="txt"><?=Yii::$app->user->isGuest ? '老司机' : Yii::$app->user->identity->mobile?></span>
+        <img width="46" height="46" src="<?=!is_null(Yii::$app->user->identity->userModel->weChat) ? Yii::$app->user->identity->userModel->weChat->headimgurl : 'imges/logo_head.png'?>" alt="" class="logo">
+        <span class="txt"><?=Yii::$app->user->isGuest ? '老司机' : Yii::$app->user->identity->nickName?></span>
         <span class="right_img"></span>
         <ul class="down_list">
 
@@ -43,7 +43,7 @@
             <?php
                 } else {
             ?>
-                    <a href="">
+                    <a href="<?=Url::to(['site/my-info'])?>">
                         <li>我的信息</li>
                     </a>
                     <a href="">
